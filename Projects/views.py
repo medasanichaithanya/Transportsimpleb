@@ -122,7 +122,7 @@ def fetchposts(request):
 
            
         except Exception as e:
-            return JsonResponse({'Status': 'Error occured'})
+            return JsonResponse({'Status': str(e)})
     else:
         return JsonResponse({'Status': 'UNKNOWN ERROR'})
 
