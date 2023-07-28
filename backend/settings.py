@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-cw=+z((y=vvh5seni1m&j8j(8ig3s0j#=e980s6!!_)w*-53m=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_WHITELIST = ('http://localhost:8000',)
 CSRF_TRUSTED_ORIGINS = ['http://localhost:8000','http://localhost:3000']
 CORS_ORIGIN_ALLOW_ALL = True
@@ -81,10 +81,21 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'postgres', 
+        'USER': 'postgres',
+        'PASSWORD': 'chaithanya',
+        'HOST': 'database-1.c1iiyw7gmitx.us-east-1.rds.amazonaws.com', 
+        'PORT': '5432',
     }
 }
 
