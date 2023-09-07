@@ -4,6 +4,9 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 import bcrypt
+from datetime import datetime, timedelta
+import pytz
+
 
 
 
@@ -96,22 +99,46 @@ def fetchposts(request):
     if request.method == 'GET':
         try:
             posts_data = UserInformation.objects.filter().all()
+            end_datetime = datetime.now(pytz.UTC)
             data=[]
-            for i in posts_data:
-                get_questions = QuestionDetails.objects.filter(userid=i.id).distinct()
-                for i in get_questions:
+            for users in posts_data:
+                get_questions = QuestionDetails.objects.filter(userid=users.id).distinct()
+                for questions in get_questions:
                     obj={}
-                    obj['questionid'] = i.questionid
-                    obj['question'] = i.question
-                    check_user = UserInformation.objects.filter(id=i.userid)
+                    obj['questionid'] = questions.questionid
+                    obj['question'] = questions.question
+                    duration = end_datetime - questions.dateCreated
+                    days = duration.days
+                    hours = duration.seconds // 3600  # 3600 seconds in an hour
+                    weeks = days // 7
+                    if weeks >= 1:
+                        obj['qtime']= f"{weeks}w"
+                    elif days >= 1:
+                        obj['qtime'] = f"{days}d"
+                    else:
+                        obj['qtime']= f"{hours}h"
+                    check_user = UserInformation.objects.filter(id=questions.userid)
                     obj['user'] = check_user[0].firstname +" " +check_user[0].lastname
+                    obj['imgurl'] = check_user[0].profileImgUrl
                     answerdata = []
-                    fetch_answers = AnswerDetails.objects.filter(userid=i.userid,questionid=i.questionid)
-                    for i in fetch_answers:
+                    fetch_answers = AnswerDetails.objects.filter(questionid=questions.questionid)
+                    for answer in fetch_answers:
                         answers={}
-                        check_user = UserInformation.objects.filter(id=i.userid)
+                        check_user = UserInformation.objects.filter(id=answer.userid)
                         answers['user'] = check_user[0].firstname +" " +check_user[0].lastname
-                        answers['answer'] = i.answer
+                        answers['imgurls'] = check_user[0].profileImgUrl
+                        answers['answer'] = answer.answer
+                        duration = end_datetime - answer.dateCreated
+                        days = duration.days
+                        hours = duration.seconds // 3600  # 3600 seconds in an hour
+                        weeks = days // 7
+                        if weeks >= 1:
+                            answers['atime']= f"{weeks}w"
+                        elif days >= 1:
+                            answers['atime'] = f"{days}d"
+                        else:
+                            answers['atime']= f"{hours}h"
+                        
                         answerdata.append(answers)
 
                     obj['answers'] = answerdata
